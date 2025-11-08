@@ -1,0 +1,42 @@
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Project } from '../types';
+import ChevronRightIcon from './icons/ChevronRightIcon';
+
+interface ProjectCardProps {
+  project: Project;
+}
+
+const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+  const formatCurrency = (value: number) => new Intl.NumberFormat('en-US').format(value);
+
+  return (
+    <Link 
+      to={`/project/${project.id}`} 
+      className="block bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+    >
+      <div className="flex justify-between items-start">
+        <div>
+          <span className="text-sm font-semibold text-blue-600 bg-blue-100 py-1 px-2 rounded-full">{project.id}</span>
+          <h3 className="text-lg font-bold text-gray-800 mt-2">{project.name}</h3>
+        </div>
+        <div className="text-gray-400 group-hover:text-blue-600 transition-colors">
+            <ChevronRightIcon />
+        </div>
+      </div>
+      <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="flex justify-between items-center text-sm">
+          <span className="text-gray-500">Total Cost (EUR)</span>
+          <span className="font-semibold text-gray-700">€{formatCurrency(project.totalCostEUR)}m</span>
+        </div>
+        <div className="flex justify-between items-center text-sm mt-2">
+          <span className="text-gray-500">Total Cost (RSD)</span>
+          <span className="font-semibold text-gray-700">{formatCurrency(project.totalCostRSD)}m</span>
+        </div>
+      </div>
+    </Link>
+  );
+};
+
+export default ProjectCard;

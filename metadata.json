@@ -1,0 +1,5 @@
+{
+  "name": "Serbia Public Investment Tracker",
+  "description": "An interactive application to systematically track major public investment projects in Serbia, featuring multi-year financial data visualizations and AI-powered project summaries.",
+  "requestFramePermissions": []
+}
