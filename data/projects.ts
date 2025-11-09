@@ -1,61 +1,105 @@
+import { Project, ProjectLocation } from '../types';
+import { projectTable } from './database';
 
-import { Project } from '../types';
+const EUR_RSD_RATE = 117.2;
 
-export const projects: Project[] = [
-  { "id": "PS-1", "name": "Belgrade Metro - Line 1 and Depot Makisko polje", "totalCostRSD": 268680, "totalCostEUR": 2296, "disbursed2023": 2320, "plan2024": 30000, "plan2025": 40000, "plan2026": 50000, "plan2027_beyond": 146360, "location": { "type": "LineString", "coordinates": [[44.75, 20.4], [44.82, 20.48]] } },
-  { "id": "PS-2", "name": "Railway Corridor X - Belgrade-Nis section", "totalCostRSD": 322978, "totalCostEUR": 2775, "disbursed2023": 0, "plan2024": 200, "plan2025": 10000, "plan2026": 20000, "plan2027_beyond": 292778, "location": { "type": "LineString", "coordinates": [[44.8, 20.45], [43.32, 21.9]] } },
-  { "id": "PS-3", "name": "Railway Corridor X - Nis-Dimitrovgrad section", "totalCostRSD": 31379, "totalCostEUR": 268, "disbursed2023": 12891, "plan2024": 8000, "plan2025": 6000, "plan2026": 4000, "plan2027_beyond": 488, "location": { "type": "LineString", "coordinates": [[43.32, 21.9], [43.15, 22.7]] } },
-  { "id": "PS-4", "name": "Belgrade-Budapest Railway Line", "totalCostRSD": 231464, "totalCostEUR": 1978, "disbursed2023": 178523, "plan2024": 37274, "plan2025": 10000, "plan2026": 5667, "plan2027_beyond": 0, "location": { "type": "LineString", "coordinates": [[44.8, 20.45], [45.25, 19.83], [46.1, 19.66]] } },
-  { "id": "PS-5", "name": "Fruskogorski Corridor (Novi Sad-Ruma)", "totalCostRSD": 70785, "totalCostEUR": 605, "disbursed2023": 15648, "plan2024": 20000, "plan2025": 20000, "plan2026": 15137, "plan2027_beyond": 0, "location": { "type": "LineString", "coordinates": [[45.25, 19.83], [45.1, 19.82]] } },
-  { "id": "PS-6", "name": "Moravski Corridor (Pojate-Preljina)", "totalCostRSD": 115296, "totalCostEUR": 985, "disbursed2023": 75787, "plan2024": 24000, "plan2025": 15509, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "LineString", "coordinates": [[43.7, 21.5], [43.88, 20.35]] } },
-  { "id": "PS-7", "name": "Highway E-763 (Preljina-Pozega)", "totalCostRSD": 59904, "totalCostEUR": 512, "disbursed2023": 44104, "plan2024": 15000, "plan2025": 800, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "LineString", "coordinates": [[43.88, 20.35], [43.84, 20.03]] } },
-  { "id": "PS-8", "name": "Highway Ruma-Sabac-Loznica", "totalCostRSD": 57915, "totalCostEUR": 495, "disbursed2023": 36195, "plan2024": 16000, "plan2025": 5720, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "LineString", "coordinates": [[45.1, 19.82], [44.75, 19.69], [44.53, 19.22]] } },
-  { "id": "PS-9", "name": "Highway E-80 (Nis-Merdare) section Nis-Plocnik", "totalCostRSD": 40365, "totalCostEUR": 345, "disbursed2023": 2185, "plan2024": 13500, "plan2025": 15000, "plan2026": 9680, "plan2027_beyond": 0, "location": { "type": "LineString", "coordinates": [[43.32, 21.9], [43.1, 21.5]] } },
-  { "id": "PS-10", "name": "Sremska Raca-Kuzmin Highway and Bridge over Sava", "totalCostRSD": 26325, "totalCostEUR": 225, "disbursed2023": 19475, "plan2024": 4200, "plan2025": 2650, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "LineString", "coordinates": [[44.9, 19.25], [44.95, 19.45]] } },
-  { "id": "PS-11", "name": "Danube Corridor (Pozarevac-Golubac)", "totalCostRSD": 43295, "totalCostEUR": 370, "disbursed2023": 2500, "plan2024": 10000, "plan2025": 12000, "plan2026": 10000, "plan2027_beyond": 8795, "location": { "type": "LineString", "coordinates": [[44.6, 21.18], [44.65, 21.63]] } },
-  { "id": "PS-12", "name": "Northern relief road around Kragujevac", "totalCostRSD": 25740, "totalCostEUR": 220, "disbursed2023": 0, "plan2024": 200, "plan2025": 3000, "plan2026": 5000, "plan2027_beyond": 17540, "location": { "type": "LineString", "coordinates": [[44.0, 20.9], [44.05, 20.95]] } },
-  { "id": "PS-13", "name": "High-speed road Sombor-Kikinda", "totalCostRSD": 222300, "totalCostEUR": 1900, "disbursed2023": 0, "plan2024": 200, "plan2025": 10000, "plan2026": 20000, "plan2027_beyond": 192100, "location": { "type": "LineString", "coordinates": [[45.77, 19.11], [45.83, 20.47]] } },
-  { "id": "PS-14", "name": "High-speed road Pozarevac-Veliko Gradiste-Golubac", "totalCostRSD": 40950, "totalCostEUR": 350, "disbursed2023": 0, "plan2024": 200, "plan2025": 3000, "plan2026": 5000, "plan2027_beyond": 32750, "location": { "type": "LineString", "coordinates": [[44.6, 21.18], [44.65, 21.63]] } },
-  { "id": "PS-15", "name": "High-speed road 'Vozd Karadjordje'", "totalCostRSD": 234000, "totalCostEUR": 2000, "disbursed2023": 0, "plan2024": 200, "plan2025": 10000, "plan2026": 20000, "plan2027_beyond": 203800, "location": null },
-  { "id": "PS-16", "name": "Belgrade-Zrenjanin-Novi Sad Highway", "totalCostRSD": 175500, "totalCostEUR": 1500, "disbursed2023": 0, "plan2024": 200, "plan2025": 10000, "plan2026": 15000, "plan2027_beyond": 150300, "location": { "type": "LineString", "coordinates": [[44.8, 20.45], [45.25, 20.38], [45.25, 19.83]] } },
-  { "id": "PS-17", "name": "Project for removing the old Sava bridge and building a new one", "totalCostRSD": 13923, "totalCostEUR": 119, "disbursed2023": 0, "plan2024": 5000, "plan2025": 5000, "plan2026": 3923, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [44.808, 20.444] } },
-  { "id": "PS-18", "name": "Construction of the Belgrade-Surcin section", "totalCostRSD": 8202, "totalCostEUR": 70, "disbursed2023": 8102, "plan2024": 100, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "LineString", "coordinates": [[44.8, 20.3], [44.82, 20.4]] } },
-  { "id": "PS-19", "name": "Renovation of the Bubanj Potok-Pancevo section", "totalCostRSD": 19890, "totalCostEUR": 170, "disbursed2023": 0, "plan2024": 200, "plan2025": 3000, "plan2026": 5000, "plan2027_beyond": 11690, "location": { "type": "LineString", "coordinates": [[44.73, 20.53], [44.88, 20.64]] } },
-  { "id": "PS-20", "name": "Construction of a new bridge on the Danube near Backa Palanka", "totalCostRSD": 11700, "totalCostEUR": 100, "disbursed2023": 0, "plan2024": 200, "plan2025": 3000, "plan2026": 5000, "plan2027_beyond": 3500, "location": { "type": "Point", "coordinates": [45.25, 19.4] } },
-  { "id": "PS-21", "name": "Project for the integrated development of the Ovcar-Kablar Gorge", "totalCostRSD": 4680, "totalCostEUR": 40, "disbursed2023": 2000, "plan2024": 2000, "plan2025": 680, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [43.9, 20.18] } },
-  { "id": "PS-22", "name": "Construction of Nis airport infrastructure", "totalCostRSD": 2925, "totalCostEUR": 25, "disbursed2023": 125, "plan2024": 1500, "plan2025": 1000, "plan2026": 300, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [43.33, 21.85] } },
-  { "id": "PS-23", "name": "Construction of a gas interconnector Serbia-Bulgaria", "totalCostRSD": 10502, "totalCostEUR": 90, "disbursed2023": 9502, "plan2024": 1000, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "LineString", "coordinates": [[43.32, 21.9], [43.15, 22.7]] } },
-  { "id": "PS-24", "name": "Construction of a gas interconnector Serbia-North Macedonia", "totalCostRSD": 9945, "totalCostEUR": 85, "disbursed2023": 0, "plan2024": 200, "plan2025": 2000, "plan2026": 3000, "plan2027_beyond": 4745, "location": { "type": "LineString", "coordinates": [[43.32, 21.9], [42.3, 21.7]] } },
-  { "id": "PS-25", "name": "Pumped-storage hydroelectric power plant Bistrica", "totalCostRSD": 140400, "totalCostEUR": 1200, "disbursed2023": 0, "plan2024": 200, "plan2025": 3000, "plan2026": 5000, "plan2027_beyond": 132200, "location": { "type": "Point", "coordinates": [43.4, 19.6] } },
-  { "id": "PS-26", "name": "Wastewater treatment plant 'Veliko selo' Belgrade", "totalCostRSD": 68445, "totalCostEUR": 585, "disbursed2023": 4845, "plan2024": 10000, "plan2025": 12000, "plan2026": 15000, "plan2027_beyond": 26600, "location": { "type": "Point", "coordinates": [44.83, 20.55] } },
-  { "id": "PS-27", "name": "Construction of regional waste management centers", "totalCostRSD": 17550, "totalCostEUR": 150, "disbursed2023": 0, "plan2024": 200, "plan2025": 2000, "plan2026": 3000, "plan2027_beyond": 12350, "location": null },
-  { "id": "PS-28", "name": "Modernization of the irrigation system - Phase I", "totalCostRSD": 6435, "totalCostEUR": 55, "disbursed2023": 2600, "plan2024": 2000, "plan2025": 1500, "plan2026": 335, "plan2027_beyond": 0, "location": null },
-  { "id": "PS-29", "name": "Construction of the primary irrigation network", "totalCostRSD": 5850, "totalCostEUR": 50, "disbursed2023": 0, "plan2024": 1000, "plan2025": 2000, "plan2026": 2000, "plan2027_beyond": 850, "location": null },
-  { "id": "PS-30", "name": "Tivat water supply project, Montenegro", "totalCostRSD": 3861, "totalCostEUR": 33, "disbursed2023": 3861, "plan2024": 0, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": null },
-  { "id": "PS-31", "name": "Construction of the Clinical Center of Serbia", "totalCostRSD": 14625, "totalCostEUR": 125, "disbursed2023": 14125, "plan2024": 500, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [44.80, 20.46] } },
-  { "id": "PS-32", "name": "Construction and outfitting of the Clinical Center of Vojvodina", "totalCostRSD": 6891, "totalCostEUR": 59, "disbursed2023": 4891, "plan2024": 2000, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [45.24, 19.83] } },
-  { "id": "PS-33", "name": "Construction and outfitting of the Clinical Center of Kragujevac", "totalCostRSD": 6786, "totalCostEUR": 58, "disbursed2023": 3500, "plan2024": 2500, "plan2025": 786, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [44.0, 20.91] } },
-  { "id": "PS-34", "name": "Tirsova 2 - children's hospital", "totalCostRSD": 11700, "totalCostEUR": 100, "disbursed2023": 4000, "plan2024": 4000, "plan2025": 3700, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [44.79, 20.45] } },
-  { "id": "PS-35", "name": "Project for the construction of the 'BIO 4' campus", "totalCostRSD": 52650, "totalCostEUR": 450, "disbursed2023": 0, "plan2024": 200, "plan2025": 5000, "plan2026": 10000, "plan2027_beyond": 37450, "location": { "type": "Point", "coordinates": [44.77, 20.47] } },
-  { "id": "PS-36", "name": "Construction of state data centers in Belgrade and Kragujevac", "totalCostRSD": 11310, "totalCostEUR": 97, "disbursed2023": 11010, "plan2024": 300, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": null },
-  { "id": "PS-37", "name": "Connected schools project - Phase II", "totalCostRSD": 7488, "totalCostEUR": 64, "disbursed2023": 2500, "plan2024": 2500, "plan2025": 2488, "plan2026": 0, "plan2027_beyond": 0, "location": null },
-  { "id": "PS-38", "name": "Science and technology parks (Nis, Cacak, Krusevac)", "totalCostRSD": 3042, "totalCostEUR": 26, "disbursed2023": 2000, "plan2024": 1042, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": null },
-  { "id": "PS-39", "name": "Construction of a concert hall for the Belgrade Philharmonic", "totalCostRSD": 14040, "totalCostEUR": 120, "disbursed2023": 200, "plan2024": 1000, "plan2025": 3000, "plan2026": 5000, "plan2027_beyond": 4840, "location": { "type": "Point", "coordinates": [44.81, 20.4] } },
-  { "id": "PS-40", "name": "Construction of the National Volleyball Training Center", "totalCostRSD": 2925, "totalCostEUR": 25, "disbursed2023": 0, "plan2024": 1000, "plan2025": 1000, "plan2026": 925, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [44.8, 20.41] } },
-  { "id": "PS-41", "name": "Construction of a multifunctional sports hall at Kosutnjak", "totalCostRSD": 2340, "totalCostEUR": 20, "disbursed2023": 200, "plan2024": 1000, "plan2025": 1140, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [44.76, 20.42] } },
-  { "id": "PS-42", "name": "National stadium with accompanying facilities", "totalCostRSD": 105300, "totalCostEUR": 900, "disbursed2023": 0, "plan2024": 200, "plan2025": 10000, "plan2026": 20000, "plan2027_beyond": 75100, "location": { "type": "Point", "coordinates": [44.78, 20.35] } },
-  { "id": "PS-43", "name": "EXPO 2027 complex with accompanying facilities", "totalCostRSD": 117000, "totalCostEUR": 1000, "disbursed2023": 0, "plan2024": 200, "plan2025": 15000, "plan2026": 30000, "plan2027_beyond": 71800, "location": { "type": "Point", "coordinates": [44.79, 20.36] } },
-  { "id": "PS-44", "name": "Reconstruction of the 'Sava Centar' facility", "totalCostRSD": 11700, "totalCostEUR": 100, "disbursed2023": 8000, "plan2024": 3700, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [44.80, 20.43] } },
-  { "id": "PS-45", "name": "Construction of the 'Lozevski vinogradi' memorial complex", "totalCostRSD": 3510, "totalCostEUR": 30, "disbursed2023": 500, "plan2024": 1500, "plan2025": 1510, "plan2026": 0, "plan2027_beyond": 0, "location": null },
-  { "id": "PS-46", "name": "Construction of the Radiotelevision Vojvodina building", "totalCostRSD": 4095, "totalCostEUR": 35, "disbursed2023": 3995, "plan2024": 100, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [45.25, 19.84] } },
-  { "id": "PS-47", "name": "Construction of social housing", "totalCostRSD": 5850, "totalCostEUR": 50, "disbursed2023": 1000, "plan2024": 1500, "plan2025": 1500, "plan2026": 1000, "plan2027_beyond": 850, "location": null },
-  { "id": "PS-48", "name": "Construction of apartments for security forces", "totalCostRSD": 29250, "totalCostEUR": 250, "disbursed2023": 25000, "plan2024": 2000, "plan2025": 1500, "plan2026": 750, "plan2027_beyond": 0, "location": null },
-  { "id": "PS-49", "name": "Procurement of new trains for passenger transport", "totalCostRSD": 21060, "totalCostEUR": 180, "disbursed2023": 0, "plan2024": 10000, "plan2025": 11060, "plan2026": 0, "plan2027_beyond": 0, "location": null },
-  { "id": "PS-50", "name": "Project for the modernization of ships and ports", "totalCostRSD": 58500, "totalCostEUR": 500, "disbursed2023": 200, "plan2024": 5000, "plan2025": 10000, "plan2026": 15000, "plan2027_beyond": 28300, "location": null },
-  { "id": "PS-51", "name": "Project for the emergency restoration of the Djerdap 1 lock", "totalCostRSD": 3393, "totalCostEUR": 29, "disbursed2023": 3393, "plan2024": 0, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [44.67, 22.53] } },
-  { "id": "PS-52", "name": "Project for the restoration of the Djerdap 2 lock", "totalCostRSD": 4095, "totalCostEUR": 35, "disbursed2023": 500, "plan2024": 1500, "plan2025": 1500, "plan2026": 595, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [44.28, 22.55] } },
-  { "id": "PS-53", "name": "Construction of a new bridge in Novi Sad", "totalCostRSD": 19890, "totalCostEUR": 170, "disbursed2023": 200, "plan2024": 3000, "plan2025": 5000, "plan2026": 5000, "plan2027_beyond": 6690, "location": { "type": "Point", "coordinates": [45.23, 19.86] } },
-  { "id": "PS-54", "name": "Construction of a pedestrian-bicycle bridge in Novi Sad", "totalCostRSD": 4680, "totalCostEUR": 40, "disbursed2023": 500, "plan2024": 2000, "plan2025": 2180, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [45.25, 19.85] } },
-  { "id": "PS-55", "name": "Construction of the 'Srbija' stadium in Zajecar", "totalCostRSD": 3510, "totalCostEUR": 30, "disbursed2023": 3000, "plan2024": 510, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [43.9, 22.28] } },
-  { "id": "PS-56", "name": "Construction of the 'Dubocica' stadium in Leskovac", "totalCostRSD": 2925, "totalCostEUR": 25, "disbursed2023": 2500, "plan2024": 425, "plan2025": 0, "plan2026": 0, "plan2027_beyond": 0, "location": { "type": "Point", "coordinates": [43.0, 21.95] } }
-]
+// Locations are maintained separately as they are not part of the core financial data sheet.
+const oldLocations = new Map<number, ProjectLocation | null>([
+  [1, { "type": "LineString", "coordinates": [[44.75, 20.4], [44.82, 20.48]] }],
+  [2, { "type": "LineString", "coordinates": [[44.8, 20.45], [43.32, 21.9]] }],
+  [3, { "type": "LineString", "coordinates": [[43.32, 21.9], [43.15, 22.7]] }],
+  [4, { "type": "LineString", "coordinates": [[44.8, 20.45], [45.25, 19.83], [46.1, 19.66]] }],
+  [5, { "type": "LineString", "coordinates": [[45.25, 19.83], [45.1, 19.82]] }],
+  [6, { "type": "LineString", "coordinates": [[43.7, 21.5], [43.88, 20.35]] }],
+  [7, { "type": "LineString", "coordinates": [[43.88, 20.35], [43.84, 20.03]] }],
+  [8, { "type": "LineString", "coordinates": [[45.1, 19.82], [44.75, 19.69], [44.53, 19.22]] }],
+  [9, { "type": "LineString", "coordinates": [[43.32, 21.9], [43.1, 21.5]] }],
+  [10, { "type": "LineString", "coordinates": [[44.9, 19.25], [44.95, 19.45]] }],
+  [11, { "type": "LineString", "coordinates": [[44.6, 21.18], [44.65, 21.63]] }],
+  [12, { "type": "LineString", "coordinates": [[44.0, 20.9], [44.05, 20.95]] }],
+  [13, { "type": "LineString", "coordinates": [[45.77, 19.11], [45.83, 20.47]] }],
+  [14, { "type": "LineString", "coordinates": [[44.6, 21.18], [44.65, 21.63]] }],
+  [15, null],
+  [16, { "type": "LineString", "coordinates": [[44.8, 20.45], [45.25, 20.38], [45.25, 19.83]] }],
+  [17, { "type": "Point", "coordinates": [44.808, 20.444] }],
+  [18, { "type": "LineString", "coordinates": [[44.8, 20.3], [44.82, 20.4]] }],
+  [19, { "type": "LineString", "coordinates": [[44.73, 20.53], [44.88, 20.64]] }],
+  [20, { "type": "Point", "coordinates": [45.25, 19.4] }],
+  [21, { "type": "Point", "coordinates": [43.9, 20.18] }],
+  [22, { "type": "Point", "coordinates": [43.33, 21.85] }],
+  [23, { "type": "LineString", "coordinates": [[43.32, 21.9], [43.15, 22.7]] }],
+  [24, { "type": "LineString", "coordinates": [[43.32, 21.9], [42.3, 21.7]] }],
+  [25, { "type": "Point", "coordinates": [43.4, 19.6] }],
+  [26, { "type": "Point", "coordinates": [44.83, 20.55] }],
+  [27, null],
+  [28, null],
+  [29, null],
+  [30, null],
+  [31, { "type": "Point", "coordinates": [44.8, 20.46] }],
+  [32, { "type": "Point", "coordinates": [45.24, 19.83] }],
+  [33, { "type": "Point", "coordinates": [44.0, 20.91] }],
+  [34, { "type": "Point", "coordinates": [44.79, 20.45] }],
+  [35, { "type": "Point", "coordinates": [44.77, 20.47] }],
+  [36, null],
+  [37, null],
+  [38, null],
+  [39, { "type": "Point", "coordinates": [44.81, 20.4] }],
+  [40, { "type": "Point", "coordinates": [44.8, 20.41] }],
+  [41, { "type": "Point", "coordinates": [44.76, 20.42] }],
+  [42, { "type": "Point", "coordinates": [44.78, 20.35] }],
+  [43, { "type": "Point", "coordinates": [44.79, 20.36] }],
+  [44, { "type": "Point", "coordinates": [44.80, 20.43] }],
+  [45, null],
+  [46, { "type": "Point", "coordinates": [45.25, 19.84] }],
+  [47, null],
+  [48, null],
+  [49, null],
+  [50, null],
+  [51, { "type": "Point", "coordinates": [44.67, 22.53] }],
+  [52, { "type": "Point", "coordinates": [44.28, 22.55] }],
+  [53, { "type": "Point", "coordinates": [45.23, 19.86] }],
+  [54, { "type": "Point", "coordinates": [45.25, 19.85] }],
+  [55, { "type": "Point", "coordinates": [43.9, 22.28] }],
+  [56, { "type": "Point", "coordinates": [43.0, 21.95] }]
+]);
+
+/**
+ * Processes the raw project data from the "database" into the application's data model.
+ * This includes:
+ * - Mapping database columns to the Project type properties.
+ * - Calculating EUR values from RSD.
+ * - Attaching geographical location data.
+ */
+export const projects: Project[] = projectTable.map(row => {
+    const totalCostRSD = row.total_value_rsd;
+    const disbursed2024 = row.cost_up_to_2025;
+    const plan2025 = row.proj_cost_2025;
+    const plan2026 = row.proj_cost_2026;
+    const plan2027 = row.proj_cost_2027;
+    const plan2028 = row.proj_cost_2028;
+
+    const plan2029_beyond = Math.max(0, 
+        totalCostRSD - 
+        disbursed2024 - 
+        plan2025 - 
+        plan2026 - 
+        plan2027 - 
+        plan2028
+    );
+
+    return {
+        id: row.no,
+        projectCode: row.project_code,
+        name: row.project_name_srb,
+        name_en: row.project_name_eng,
+        totalCostRSD,
+        totalCostEUR: Math.round(totalCostRSD / EUR_RSD_RATE),
+        disbursed2024,
+        plan2025,
+        plan2026,
+        plan2027,
+        plan2028,
+        plan2029_beyond,
+        location: oldLocations.get(row.no) || null,
+    };
+});

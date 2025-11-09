@@ -1,7 +1,8 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projects } from '../data/projects';
-import { Project, AISummary } from '../types';
+import { Project } from '../types';
 import ProjectChart from '../components/ProjectChart';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { generateProjectSummary } from '../services/geminiService';
@@ -25,9 +26,9 @@ const MapViewSetter: React.FC<{ project: Project }> = ({ project }) => {
 
 const ProjectDetailPage: React.FC = () => {
   const { id } = useParams();
-  const project = useMemo(() => projects.find(p => p.id === id), [id]);
+  const project = useMemo(() => projects.find(p => p.id.toString() === id), [id]);
 
-  const [summary, setSummary] = useState<AISummary | null>(null);
+  const [summary, setSummary] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +40,8 @@ const ProjectDetailPage: React.FC = () => {
     try {
       const result = await generateProjectSummary(
         project.name,
-        project.id,
+        project.name_en,
+        project.projectCode,
         `€${project.totalCostEUR}m (RSD ${project.totalCostRSD}m)`
       );
       setSummary(result);
@@ -76,14 +78,19 @@ const ProjectDetailPage: React.FC = () => {
         &larr; Back to Portfolio
       </Link>
       <div className="bg-white p-8 rounded-xl shadow-lg">
-        <span className="text-sm font-semibold text-blue-600 bg-blue-100 py-1 px-3 rounded-full">{project.id}</span>
-        <h1 className="text-3xl font-bold text-gray-900 mt-2">{project.name}</h1>
+        <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
+            <span>No: <span className="font-semibold text-gray-800">{project.id}</span></span>
+            <span className="border-l border-gray-300 h-4"></span>
+            <span>Project Code: <span className="font-semibold text-gray-800">{project.projectCode}</span></span>
+        </div>
+        <h1 className="text-3xl font-bold text-gray-900">{project.name}</h1>
+        <h2 className="text-xl font-medium text-gray-600 mt-1">{project.name_en}</h2>
         
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
             <InfoCard title="Total Cost (EUR)" value={`€${formatCurrency(project.totalCostEUR)}`} currency="million"/>
             <InfoCard title="Total Cost (RSD)" value={`${formatCurrency(project.totalCostRSD)}`} currency="million"/>
-            <InfoCard title="Disbursed by end-2023" value={`${formatCurrency(project.disbursed2023)}`} currency="RSD mn"/>
-            <InfoCard title="2024 Plan" value={`${formatCurrency(project.plan2024)}`} currency="RSD mn"/>
+            <InfoCard title="Disbursed by end-2024" value={`${formatCurrency(project.disbursed2024)}`} currency="RSD mn"/>
+            <InfoCard title="Planned for 2025" value={`${formatCurrency(project.plan2025)}`} currency="RSD mn"/>
         </div>
 
         <div className="mt-8">
@@ -110,13 +117,13 @@ const ProjectDetailPage: React.FC = () => {
 
         <div className="mt-12 pt-8 border-t border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-800">AI-Powered Project Briefing</h2>
-          <p className="text-gray-600 mt-1">Generate a summary of the project's location and recent press coverage.</p>
+          <p className="text-gray-600 mt-1">Generate a detailed summary of the project based on publicly available information.</p>
           <button
             onClick={handleGenerateSummary}
             disabled={isLoading}
             className="mt-4 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
-            {isLoading ? 'Generating...' : 'Generate Summary'}
+            {isLoading ? 'Generating...' : 'Generate Briefing'}
           </button>
 
           {isLoading && <div className="mt-4"><LoadingSpinner /></div>}
@@ -124,15 +131,8 @@ const ProjectDetailPage: React.FC = () => {
           {error && <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-lg">{error}</div>}
 
           {summary && (
-            <div className="mt-6 space-y-6">
-              <div className="bg-blue-50 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold text-blue-800">Location Summary</h3>
-                <p className="mt-2 text-gray-700">{summary.locationSummary}</p>
-              </div>
-              <div className="bg-green-50 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold text-green-800">Press Reports Summary</h3>
-                <p className="mt-2 text-gray-700">{summary.pressReportsSummary}</p>
-              </div>
+            <div className="mt-6 bg-gray-50 p-6 rounded-lg border border-gray-200">
+              <div className="whitespace-pre-wrap font-sans text-gray-700">{summary}</div>
             </div>
           )}
         </div>

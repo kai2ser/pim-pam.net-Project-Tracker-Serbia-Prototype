@@ -1,5 +1,5 @@
 {
-  "name": "serbia-public-investment-tracker",
+  "name": "pim-pam-serbia",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -15,7 +15,9 @@
     "react-dom": "^19.2.0",
     "@google/genai": "^1.29.0",
     "react": "^19.2.0",
-    "react-router-dom": "^7.9.5"
+    "react-router-dom": "^7.9.5",
+    "@geoman-io/leaflet-geoman-free": "^2.14.2",
+    "@tmcw/togeojson": "^5.2.2"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

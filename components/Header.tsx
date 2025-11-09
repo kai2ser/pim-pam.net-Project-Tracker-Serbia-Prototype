@@ -12,7 +12,7 @@ const Header: React.FC = () => {
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <NavLink to="/" className="text-xl font-bold text-gray-800 hover:text-blue-600 transition-colors">
-          🇷🇸 Serbia Investment Tracker
+          🇷🇸 PIM-PAM Serbia
         </NavLink>
         <nav className="flex items-center space-x-6">
           <NavLink
@@ -28,6 +28,13 @@ const Header: React.FC = () => {
             style={({ isActive }) => (isActive ? activeLinkStyle : {})}
           >
             Map View
+          </NavLink>
+          <NavLink
+            to="/mapper"
+            className="text-gray-600 hover:text-blue-600 font-medium transition-colors pb-1"
+            style={({ isActive }) => (isActive ? activeLinkStyle : {})}
+          >
+            Mapper
           </NavLink>
           <NavLink
             to="/about"

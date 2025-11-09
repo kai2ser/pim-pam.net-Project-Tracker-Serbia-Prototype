@@ -1,4 +1,3 @@
-
 export type LocationType = 'Point' | 'LineString' | 'Polygon';
 
 export interface ProjectLocation {
@@ -10,19 +9,17 @@ export interface ProjectLocation {
 }
 
 export interface Project {
-  id: string;
-  name: string;
+  id: number;
+  projectCode: string;
+  name: string; // Serbian name
+  name_en: string; // English name
   totalCostRSD: number;
   totalCostEUR: number;
-  disbursed2023: number;
-  plan2024: number;
+  disbursed2024: number;
   plan2025: number;
   plan2026: number;
-  plan2027_beyond: number;
+  plan2027: number;
+  plan2028: number;
+  plan2029_beyond: number;
   location: ProjectLocation | null;
-}
-
-export interface AISummary {
-  locationSummary: string;
-  pressReportsSummary:string;
 }

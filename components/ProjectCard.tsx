@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Project } from '../types';
@@ -18,8 +17,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     >
       <div className="flex justify-between items-start">
         <div>
-          <span className="text-sm font-semibold text-blue-600 bg-blue-100 py-1 px-2 rounded-full">{project.id}</span>
-          <h3 className="text-lg font-bold text-gray-800 mt-2">{project.name}</h3>
+          <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
+            <span>No: <span className="font-semibold text-gray-800">{project.id}</span></span>
+            <span className="border-l border-gray-300 h-4"></span>
+            <span>Code: <span className="font-semibold text-gray-800">{project.projectCode}</span></span>
+          </div>
+          <h3 className="text-lg font-bold text-gray-800">{project.name}</h3>
+          <p className="text-sm text-gray-600 mt-1">{project.name_en}</p>
         </div>
         <div className="text-gray-400 group-hover:text-blue-600 transition-colors">
             <ChevronRightIcon />

@@ -1,5 +1,5 @@
 {
-  "name": "Serbia Public Investment Tracker",
-  "description": "An interactive application to systematically track major public investment projects in Serbia, featuring multi-year financial data visualizations and AI-powered project summaries.",
+  "name": "PIM-PAM Serbia",
+  "description": "An interactive application to systematically track major public investment projects in Serbia using the PIM-PAM (Public Investment Management - Portfolio Assessment Model) framework.",
   "requestFramePermissions": []
 }
