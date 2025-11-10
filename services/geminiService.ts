@@ -40,16 +40,16 @@ Your summary MUST include:
 
 5. EXTERNAL FINANCING AND TECHNICAL ASSISTANCE
    - Identify any reference to the project being supported by the European Union (EU), European Commission (EC) or the Western Balkan Investment Facility (WBIF)
-   - Identity if the project is being finance by any other partners such as the World Bank Group (WB, WBG), the European Investment Bank (EIB), French Development Agency (Agence française de développement (AFD), or China
+   - Identify if the project is being financed by any other partners such as the World Bank Group (WB, WBG), the European Investment Bank (EIB), French Development Agency (Agence française de développement (AFD), or China
 
 6. ECONOMIC & FINANCIAL ANALYSIS
-   - Identify any economic and financial analysis (EFA) conducted for this progject
+   - Identify any economic and financial analysis (EFA) conducted for this project
    - Identify any references to cost-benefit analysis (CBA) for this project
-   - Identify and disclosure of the Economic Rate of Return (ERR) or Economic Internal Rate of Return (EIIR for this project)
+   - Identify and disclose the Economic Rate of Return (ERR) or Economic Internal Rate of Return (EIIR) for this project
 
 7. LINKS AND REFERENCE
     - Identify the three most relevant and recent reference links available for this project
-    - Provide these three links
+    - Provide these three links, including URL
 
 <output_format>
 Structure your response as follows:

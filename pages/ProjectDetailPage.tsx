@@ -5,9 +5,12 @@ import { projects } from '../data/projects';
 import { Project } from '../types';
 import ProjectChart from '../components/ProjectChart';
 import LoadingSpinner from '../components/LoadingSpinner';
+import DownloadIcon from '../components/icons/DownloadIcon';
 import { generateProjectSummary } from '../services/geminiService';
 import { MapContainer, TileLayer, Marker, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { jsPDF } from 'jspdf';
+
 
 const MapViewSetter: React.FC<{ project: Project }> = ({ project }) => {
     const map = useMap();
@@ -31,12 +34,24 @@ const ProjectDetailPage: React.FC = () => {
   const [summary, setSummary] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCached, setIsCached] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (project) {
+        const cachedSummary = sessionStorage.getItem(`project-summary-${project.id}`);
+        if (cachedSummary) {
+            setSummary(cachedSummary);
+            setIsCached(true);
+        }
+    }
+  }, [project]);
 
   const handleGenerateSummary = async () => {
     if (!project) return;
     setIsLoading(true);
     setError(null);
     setSummary(null);
+    setIsCached(false);
     try {
       const result = await generateProjectSummary(
         project.name,
@@ -45,6 +60,7 @@ const ProjectDetailPage: React.FC = () => {
         `€${project.totalCostEUR}m (RSD ${project.totalCostRSD}m)`
       );
       setSummary(result);
+      sessionStorage.setItem(`project-summary-${project.id}`, result);
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     } finally {
@@ -52,6 +68,47 @@ const ProjectDetailPage: React.FC = () => {
     }
   };
   
+  const handleDownloadPdf = () => {
+    if (!summary || !project) return;
+
+    const doc = new jsPDF();
+    const margin = 15;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const textWidth = pageWidth - margin * 2;
+    let y = 40;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    // Use splitTextToSize for the title as well to handle potential wrapping
+    const titleLines = doc.splitTextToSize(project.name_en, textWidth);
+    doc.text(titleLines, margin, 20);
+    y = 20 + (titleLines.length * 7); // Adjust starting y position based on title height
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(`Project Code: ${project.projectCode}`, margin, y);
+    y += 6;
+    
+    doc.setLineWidth(0.2);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 8;
+
+    doc.setFontSize(11);
+    const summaryLines = doc.splitTextToSize(summary, textWidth);
+
+    for (let i = 0; i < summaryLines.length; i++) {
+        if (y > pageHeight - margin) {
+            doc.addPage();
+            y = margin;
+        }
+        doc.text(summaryLines[i], margin, y);
+        y += 7; // line height
+    }
+    
+    doc.save(`Project_Briefing_${project.projectCode}_${project.name_en.replace(/[\s/]/g, '_')}.pdf`);
+  };
+
   const formatCurrency = (value: number) => new Intl.NumberFormat('en-US').format(value);
 
   if (!project) {
@@ -118,20 +175,43 @@ const ProjectDetailPage: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-800">AI-Powered Project Briefing</h2>
           <p className="text-gray-600 mt-1">Generate a detailed summary of the project based on publicly available information.</p>
-          <button
-            onClick={handleGenerateSummary}
-            disabled={isLoading}
-            className="mt-4 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-          >
-            {isLoading ? 'Generating...' : 'Generate Briefing'}
-          </button>
+          
+          <div className="mt-4 flex items-center space-x-4">
+            <button
+              onClick={handleGenerateSummary}
+              disabled={isLoading}
+              className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            >
+              {isLoading ? 'Generating...' : (summary ? 'Regenerate Briefing' : 'Generate Briefing')}
+            </button>
+             {summary && !isLoading && (
+                <button
+                    onClick={handleDownloadPdf}
+                    className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition-colors flex items-center"
+                >
+                    <DownloadIcon />
+                    Download PDF
+                </button>
+            )}
+          </div>
 
           {isLoading && <div className="mt-4"><LoadingSpinner /></div>}
           
           {error && <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-lg">{error}</div>}
 
+          {!summary && !isLoading && !error && (
+            <div className="mt-6 bg-gray-50 p-6 rounded-lg border border-gray-200 text-center">
+                <p className="text-gray-500">No recent briefing generated.</p>
+            </div>
+          )}
+
           {summary && (
             <div className="mt-6 bg-gray-50 p-6 rounded-lg border border-gray-200">
+              {isCached && (
+                <p className="text-sm text-gray-500 italic mb-4">
+                    Displaying cached briefing from this session. Regenerate for the latest information.
+                </p>
+              )}
               <div className="whitespace-pre-wrap font-sans text-gray-700">{summary}</div>
             </div>
           )}
