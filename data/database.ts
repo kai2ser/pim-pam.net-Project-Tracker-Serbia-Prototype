@@ -1,3 +1,4 @@
+
 // This file represents the raw data source, as if imported from a database or spreadsheet.
 // The data structure and column names are based on the user-provided Google Sheet.
 
@@ -67,7 +68,6 @@ export const projectTable: ProjectTableRow[] = [
     { no: 49, project_code: "5004", project_name_srb: "Изградња и уређење туристичке инфраструктуре и супраструктуре на подручју Подунавља", project_name_eng: "Construction and arrangement of tourist infrastructure and suprastructure in the Danube region", cost_up_to_2025: 2284696256, proj_cost_2025: 1282500000, proj_cost_2026: 599714524, proj_cost_2027: 209861613, proj_cost_2028: 0, total_value_rsd: 4376772393 },
     { no: 50, project_code: "5006", project_name_srb: "Прибављање објеката у својину Републике Србије", project_name_eng: "Acquisition of facilities into the ownership of the Republic of Serbia", cost_up_to_2025: 2519235959, proj_cost_2025: 1342198000, proj_cost_2026: 1358566041, proj_cost_2027: 0, proj_cost_2028: 0, total_value_rsd: 5220000000 },
     { no: 51, project_code: "5007", project_name_srb: "Изградња граничног прелаза Сремска Рача", project_name_eng: "Construction of the Sremska Rača border crossing", cost_up_to_2025: 800000000, proj_cost_2025: 2500000000, proj_cost_2026: 3200000000, proj_cost_2027: 0, proj_cost_2028: 0, total_value_rsd: 6500000000 },
-    // FIX: Escaped a double quote in the `project_name_srb` string to prevent a syntax error.
     { no: 52, project_code: "5004", project_name_srb: "Успостављање Дата центра за регистре, „Васкup\" центар и „Disaster Recovery\"", project_name_eng: "Establishment of a Data center for registers, \"Backup\" center and \"Disaster Recovery\"", cost_up_to_2025: 1847674705, proj_cost_2025: 160000000, proj_cost_2026: 1030000000, proj_cost_2027: 446067855, proj_cost_2028: 0, total_value_rsd: 3483742560 },
     { no: 53, project_code: "5006", project_name_srb: "Изградња Дата центра у Крагујевцу", project_name_eng: "Construction of the Data Center in Kragujevac", cost_up_to_2025: 10529835800, proj_cost_2025: 1362000000, proj_cost_2026: 2215000000, proj_cost_2027: 2728107046, proj_cost_2028: 0, total_value_rsd: 16834942846 },
     { no: 54, project_code: "5014", project_name_srb: "Јединствена информациона комуникациона мрежа е Управе", project_name_eng: "Unique information and communication network of e-Government", cost_up_to_2025: 2239816335, proj_cost_2025: 500000000, proj_cost_2026: 950000000, proj_cost_2027: 782755952, proj_cost_2028: 0, total_value_rsd: 4472572287 },

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Project } from '../types';
@@ -13,31 +14,31 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   return (
     <Link 
       to={`/project/${project.id}`} 
-      className="block bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+      className="block bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-400 hover:-translate-y-0.5 transition-all duration-200 group h-full flex flex-col justify-between"
     >
-      <div className="flex justify-between items-start">
-        <div>
-          <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
-            <span>No: <span className="font-semibold text-gray-800">{project.id}</span></span>
-            <span className="border-l border-gray-300 h-4"></span>
-            <span>Code: <span className="font-semibold text-gray-800">{project.projectCode}</span></span>
-          </div>
-          <h3 className="text-lg font-bold text-gray-800">{project.name}</h3>
-          <p className="text-sm text-gray-600 mt-1">{project.name_en}</p>
+      <div>
+        <div className="flex justify-between items-start mb-2">
+           <span className="text-[10px] font-mono font-medium text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
+             #{project.id}
+           </span>
+           <div className="text-gray-300 group-hover:text-blue-500 transition-colors">
+              <ChevronRightIcon className="h-3 w-3" />
+           </div>
         </div>
-        <div className="text-gray-400 group-hover:text-blue-600 transition-colors">
-            <ChevronRightIcon />
-        </div>
+        
+        <h3 className="text-sm font-bold text-gray-800 leading-snug group-hover:text-blue-700 transition-colors mb-1 line-clamp-2">
+            {project.name}
+        </h3>
+        <p className="text-xs text-gray-500 line-clamp-1 leading-relaxed mb-3">
+            {project.name_en}
+        </p>
       </div>
-      <div className="mt-4 pt-4 border-t border-gray-200">
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-gray-500">Total Cost (EUR)</span>
-          <span className="font-semibold text-gray-700">€{formatCurrency(project.totalCostEUR)}m</span>
-        </div>
-        <div className="flex justify-between items-center text-sm mt-2">
-          <span className="text-gray-500">Total Cost (RSD)</span>
-          <span className="font-semibold text-gray-700">{formatCurrency(project.totalCostRSD)}m</span>
-        </div>
+      
+      <div className="mt-auto pt-2 border-t border-dashed border-gray-100 flex justify-between items-center">
+         <span className="text-[10px] text-gray-400 font-mono">{project.projectCode}</span>
+         <span className="font-bold text-blue-700 text-xs bg-blue-50 px-1.5 py-0.5 rounded">
+            €{formatCurrency(Math.round(project.totalCostEUR / 1000000))}m
+         </span>
       </div>
     </Link>
   );

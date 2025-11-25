@@ -9,12 +9,12 @@ interface ProjectChartProps {
 const ProjectChart: React.FC<ProjectChartProps> = ({ project }) => {
 
   const data = [
-    { name: 'Cost up to 2025', 'Amount (RSD mn)': project.disbursed2024 },
-    { name: 'Projected cost in 2025', 'Amount (RSD mn)': project.plan2025 },
-    { name: 'Projected cost in 2026', 'Amount (RSD mn)': project.plan2026 },
-    { name: 'Projected cost in 2027', 'Amount (RSD mn)': project.plan2027 },
-    { name: 'Projected cost in 2028', 'Amount (RSD mn)': project.plan2028 },
-    { name: 'Projected Cost 2029ff', 'Amount (RSD mn)': project.plan2029_beyond },
+    { name: 'Cost up to 2025', 'Amount (RSD mn)': Math.round(project.disbursed2024 / 1000000) },
+    { name: 'Projected cost in 2025', 'Amount (RSD mn)': Math.round(project.plan2025 / 1000000) },
+    { name: 'Projected cost in 2026', 'Amount (RSD mn)': Math.round(project.plan2026 / 1000000) },
+    { name: 'Projected cost in 2027', 'Amount (RSD mn)': Math.round(project.plan2027 / 1000000) },
+    { name: 'Projected cost in 2028', 'Amount (RSD mn)': Math.round(project.plan2028 / 1000000) },
+    { name: 'Projected Cost 2029ff', 'Amount (RSD mn)': Math.round(project.plan2029_beyond / 1000000) },
   ];
   
   const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d0ed57'];

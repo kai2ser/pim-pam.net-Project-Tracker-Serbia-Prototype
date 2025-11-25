@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 
@@ -11,9 +12,10 @@ interface PortfolioChartProps {
   dataKey: string;
   yAxisLabel: string;
   tooltipUnit: string;
+  heightClass?: string;
 }
 
-const PortfolioChart: React.FC<PortfolioChartProps> = ({ data, dataKey, yAxisLabel, tooltipUnit }) => {
+const PortfolioChart: React.FC<PortfolioChartProps> = ({ data, dataKey, yAxisLabel, tooltipUnit, heightClass = "h-96" }) => {
   const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#64748b', '#0891b2'];
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -37,7 +39,7 @@ const PortfolioChart: React.FC<PortfolioChartProps> = ({ data, dataKey, yAxisLab
   }
 
   return (
-    <div className="w-full h-96">
+    <div className={`w-full ${heightClass}`}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}

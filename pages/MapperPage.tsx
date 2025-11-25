@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import '@geoman-io/leaflet-geoman-free';
-import * as toGeoJSON from '@tmcw/togeojson';
+// Removed static import: import '@geoman-io/leaflet-geoman-free';
+import { kml } from '@tmcw/togeojson';
 
 import { projects } from '../data/projects';
 import { Project, ProjectLocation, LocationType } from '../types';
@@ -14,7 +14,6 @@ const MapEditor: React.FC<{ location: ProjectLocation | null; onLocationChange: 
   const layerRef = useRef<L.GeoJSON | null>(null);
 
   useEffect(() => {
-    // Clear existing layers when location changes from outside (e.g., KML upload)
     if (layerRef.current) {
       layerRef.current.clearLayers();
     }
@@ -30,55 +29,87 @@ const MapEditor: React.FC<{ location: ProjectLocation | null; onLocationChange: 
   }, [location, map]);
 
   useEffect(() => {
-    map.pm.addControls({
-      position: 'topleft',
-      drawCircle: false,
-      drawMarker: true,
-      drawPolyline: true,
-      drawRectangle: false,
-      drawPolygon: true,
-      drawCircleMarker: false,
-      drawText: false,
-      cutPolygon: false,
-      editMode: true,
-      dragMode: true,
-      removalMode: true,
-    });
+    let isMounted = true;
 
-    const handleShapeChange = (e: any) => {
-      const layer = e.layer || e.target;
-      if (layer) {
-        const geojson = layer.toGeoJSON().geometry;
-        onLocationChange({
-          type: geojson.type as LocationType,
-          coordinates: geojson.coordinates,
+    const initializeGeoman = async () => {
+      try {
+        // Dynamically import the plugin to ensure Leaflet is ready.
+        await import('@geoman-io/leaflet-geoman-free');
+
+        if (!isMounted || !map.pm) {
+            console.warn('Geoman could not be initialized.');
+            return;
+        }
+
+        // Prevent re-initialization
+        if ((map as any)._geomanInitialized) {
+            return;
+        }
+        (map as any)._geomanInitialized = true;
+
+        map.pm.addControls({
+          position: 'topleft',
+          drawCircle: false,
+          drawMarker: true,
+          drawPolyline: true,
+          drawRectangle: false,
+          drawPolygon: true,
+          drawCircleMarker: false,
+          drawText: false,
+          cutPolygon: false,
+          editMode: true,
+          dragMode: true,
+          removalMode: true,
         });
+
+        const handleShapeChange = (e: any) => {
+          const layer = e.layer || e.target;
+          if (layer) {
+            const geojson = layer.toGeoJSON().geometry;
+            onLocationChange({
+              type: geojson.type as LocationType,
+              coordinates: geojson.coordinates,
+            });
+          }
+        };
+
+        map.on('pm:create', (e) => {
+          map.pm.getGeomanLayers().forEach(layer => {
+              if (layer !== e.layer) {
+                  layer.remove();
+              }
+          });
+          handleShapeChange(e);
+          (e.layer as L.Layer).on('pm:edit', handleShapeChange);
+        });
+        
+        map.on('pm:remove', (e) => {
+          onLocationChange(null);
+        });
+
+      } catch (error) {
+        console.error("Failed to dynamically load or initialize Leaflet-Geoman:", error);
       }
     };
 
-    map.on('pm:create', (e) => {
-        // Enforce only one shape on the map
-        map.pm.getGeomanLayers().forEach(layer => {
-            if (layer !== e.layer) {
-                layer.remove();
-            }
-        });
-        handleShapeChange(e);
-    });
-    
-    map.on('pm:edit', handleShapeChange);
-
-    map.on('pm:remove', (e) => {
-      onLocationChange(null);
-    });
+    if (map) {
+      initializeGeoman();
+    }
 
     return () => {
-      map.pm.removeControls();
-      map.off('pm:create');
-      map.off('pm:edit');
-      map.off('pm:remove');
+      isMounted = false;
+      try {
+        if (map && map.pm && (map as any)._geomanInitialized) {
+          map.pm.removeControls();
+          map.off('pm:create');
+          map.off('pm:remove');
+          (map as any)._geomanInitialized = false;
+        }
+      } catch (error) {
+        console.error("Failed to cleanup Leaflet-Geoman controls:", error);
+      }
     };
-  }, [map, onLocationChange]);
+  }, [map]); // CRITICAL FIX: Removed onLocationChange from dependencies to prevent re-renders
 
   return <GeoJSON ref={layerRef} data={location || undefined} />;
 };
@@ -119,20 +150,24 @@ const MapperPage: React.FC = () => {
         const parser = new DOMParser();
         const kmlDoc = parser.parseFromString(kmlText, 'text/xml');
         
-        const geojson = toGeoJSON.kml(kmlDoc);
+        const geojson = kml(kmlDoc);
 
         if (geojson.features && geojson.features.length > 0) {
           const firstFeature = geojson.features[0];
           const geometry = firstFeature.geometry;
 
-          if (['Point', 'LineString', 'Polygon'].includes(geometry.type)) {
-            setLocation({
-              type: geometry.type as LocationType,
-              coordinates: geometry.coordinates,
-            });
-            handleFeedback('KML loaded. Review on map and click "Update Location" to save.');
+          if (geometry) {
+            if (geometry.type === 'Point' || geometry.type === 'LineString' || geometry.type === 'Polygon') {
+              setLocation({
+                type: geometry.type,
+                coordinates: geometry.coordinates,
+              });
+              handleFeedback('KML loaded. Review on map and click "Update Location" to save.');
+            } else {
+              handleFeedback(`Unsupported geometry type "${geometry.type}" in KML.`, true);
+            }
           } else {
-            handleFeedback(`Unsupported geometry type "${geometry.type}" in KML.`, true);
+            handleFeedback('Feature in KML file has no geometry.', true);
           }
         } else {
           handleFeedback('No valid features found in KML file.', true);
@@ -152,7 +187,7 @@ const MapperPage: React.FC = () => {
     }
     console.log('--- MAPPING UPDATE ---');
     console.log('Project ID:', selectedProject.id);
-    console.log('New Location Data:', location);
+    console.log('New Location Data:', JSON.stringify(location));
     console.log('--------------------');
     handleFeedback(`Location for "${selectedProject.name}" updated in console.`);
   };

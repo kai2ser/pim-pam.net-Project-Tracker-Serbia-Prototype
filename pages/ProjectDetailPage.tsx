@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { projects } from '../data/projects';
@@ -9,7 +10,7 @@ import DownloadIcon from '../components/icons/DownloadIcon';
 import { generateProjectSummary } from '../services/geminiService';
 import { MapContainer, TileLayer, Marker, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { jsPDF } from 'jspdf';
+import jsPDF from 'jspdf';
 
 
 const MapViewSetter: React.FC<{ project: Project }> = ({ project }) => {
@@ -144,10 +145,10 @@ const ProjectDetailPage: React.FC = () => {
         <h2 className="text-xl font-medium text-gray-600 mt-1">{project.name_en}</h2>
         
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <InfoCard title="Total Cost (EUR)" value={`€${formatCurrency(project.totalCostEUR)}`} currency="million"/>
-            <InfoCard title="Total Cost (RSD)" value={`${formatCurrency(project.totalCostRSD)}`} currency="million"/>
-            <InfoCard title="Disbursed by end-2024" value={`${formatCurrency(project.disbursed2024)}`} currency="RSD mn"/>
-            <InfoCard title="Planned for 2025" value={`${formatCurrency(project.plan2025)}`} currency="RSD mn"/>
+            <InfoCard title="Total Cost (EUR)" value={`€${formatCurrency(Math.round(project.totalCostEUR / 1000000))}`} currency="million"/>
+            <InfoCard title="Total Cost (RSD)" value={`${formatCurrency(Math.round(project.totalCostRSD / 1000000))}`} currency="million"/>
+            <InfoCard title="Disbursed by end-2024" value={`${formatCurrency(Math.round(project.disbursed2024 / 1000000))}`} currency="RSD mn"/>
+            <InfoCard title="Planned for 2025" value={`${formatCurrency(Math.round(project.plan2025 / 1000000))}`} currency="RSD mn"/>
         </div>
 
         <div className="mt-8">
